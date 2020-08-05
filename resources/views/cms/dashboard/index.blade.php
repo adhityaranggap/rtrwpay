@@ -12,7 +12,7 @@
                 </div>
                 <div class="card-wrap">
                     <div class="card-header">
-                        <h4>Total Customer</h4>
+                        <h4>Total Warga</h4>
                     </div>
                     <div class="card-body">
                         {{$customercount}}
@@ -42,7 +42,7 @@
                 </div>
                 <div class="card-wrap">
                     <div class="card-header">
-                        <h4>Ticket Open</h4>
+                        <h4>Belum Bayar</h4>
                     </div>
                     <div class="card-body">
                         {{$ticketcount}}

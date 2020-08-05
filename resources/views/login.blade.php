@@ -26,7 +26,7 @@
                     <div class="p-4 m-3">
                         <!-- <img src="../assets/img/stisla-fill.svg" alt="logo" width="80" class="shadow-light rounded-circle mb-5 mt-2"> -->
                         <img src="../assets/img/logo.png" alt="logo" width="80" class="shadow-light rounded mb-5 mt-2">
-                        <h4 class="text-dark font-weight-normal">Welcome to <span class="font-weight-bold">Internet Broadband</span></h4>
+                        <h4 class="text-dark font-weight-normal">Welcome to <span class="font-weight-bold">RTRW Pay</span></h4>
                         <p class="text-muted">Before you get started, you must login or register if you don't already have an account.</p>
                         <form method="POST" action="{{ route('login-post') }}" class="needs-validation" novalidate="">
                             @CSRF

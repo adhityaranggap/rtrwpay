@@ -28,7 +28,7 @@
                 <ul class="dropdown-menu">
                   <li class="{{ Str::startsWith(Request::path(),'users/customers') ? 'active' : ''}}"><a class="nav-link" href="{{ route('warga-index') }}">Warga</a></li>
                   <li><a class="nav-link" href="{{ route('billing-index') }}">Pengurus</a></li>
-                  <li><a class="nav-link" href="{{ route('active-user-index') }}">Active User</a></li>
+                  <!-- <li><a class="nav-link" href="{{ route('active-user-index') }}">Active User</a></li> -->
 
                 </ul>
               </li>
@@ -38,7 +38,7 @@
                 <ul class="dropdown-menu">
                   <li><a href="{{ route('warga-subscription-index') }}">Warga Subsc</a></li>
                   <li><a href="{{ route('list-subscription-index') }}">List Subscritpions</a></li>
-                  <li><a href="#">Package Track</a></li>
+                  <!-- <li><a href="#">Package Track</a></li> -->
  
                 </ul>
               </li>
