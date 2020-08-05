@@ -42,7 +42,7 @@ class Paid extends Notification
     {
         return (new MailMessage)
                     ->line('Selamat, pembayaran tagihan Internet Anda BERHASIL')
-                    ->action('Rumah Internet apps', url('https://rumahinternet.id/'))
+                    ->action('RTRW Pay apps', url('https://rumahinternet.id/'))
                     ->line('Thank you for using our application!');
     }
 
