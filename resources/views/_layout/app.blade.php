@@ -34,6 +34,7 @@
       <div class="navbar-bg"></div>
       @include('_layout.navbar')
 
+
       <!-- Sidebar -->
     @include('_layout.sidebar')
 

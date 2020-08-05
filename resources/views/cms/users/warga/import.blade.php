@@ -3,8 +3,8 @@
 <div class="form-group ">
     <label for="subscription_id">Package Name</label>
     <select class="form-control" name="subscription_id">
-    @foreach($package as $package)
-      <option value="{{$package->id}}">{{$package->name}}</option>
+    @foreach($subscriptions as $subscription)
+      <option value="{{$subscription->id}}">{{$subscription->name}}</option>
     @endforeach
     </select>
     </div>
