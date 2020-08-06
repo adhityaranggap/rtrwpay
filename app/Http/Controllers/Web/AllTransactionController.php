@@ -142,7 +142,6 @@ class AllTransactionController extends Controller
         $subscription_id = $request['subscription'];
         $data = Subscription::select('price')->where('id', $subscription_id)->first();
         $maxPaid = $data->price;
-        
         $sisa    = $data->price - $request->paid;
 
         $this->validate($request,[
@@ -160,6 +159,7 @@ class AllTransactionController extends Controller
         }
 
         // $request['updated_at'] = now();        
+        // $request['transaction_has_modified'] = now();        
         // $request['created_at'] = now();        
         $request['notes']      = '-';        
         $request['price']      = $data->price;
@@ -183,29 +183,29 @@ class AllTransactionController extends Controller
                         $request['file'] = \ImageUploadHelper::pushStorage($dir, $size, $format, $image);
                         
                     }
-                    TransactionHasModified::create([
-                        'user_id'               => Auth::user()->id,
-                        'transaction_id'        => $id,
-                        'action'                => \EnumTransaksiHasModified::UPDATE
-                    ]);
-                    $request['transaction_has_modified_id'] = DB::getPDO()->lastInsertId();
+                    // TransactionHasModified::create([
+                    //     'user_id'               => Auth::user()->id,
+                    //     'transaction_id'        => $id,
+                    //     'action'                => \EnumTransaksiHasModified::UPDATE
+                    // ]);
+                    // $request['transaction_has_modified_id'] = DB::getPDO()->lastInsertId();
 
                     Transaction::create($request->except('_token'));
-                    TransactionHasModified::create([
-                        'user_id'               => Auth::user()->id,
-                        'transaction_id'        => $id,
-                        'action'                => \EnumTransaksiHasModified::UPDATE
-                    ]);
-                    // $transaction->notify(new InvoicePaid($invoice));
+                    // TransactionHasModified::create([
+                    //     'user_id'               => Auth::user()->id,
+                    //     'transaction_id'        => $id,
+                    //     'action'                => \EnumTransaksiHasModified::UPDATE
+                    // ]);
+                    // // $transaction->notify(new InvoicePaid($invoice));
 
                 }else{
                    
-                    TransactionHasModified::create([
-                        'user_id'               => Auth::user()->id,
-                        'transaction_id'        => $id,
-                        'action'                => \EnumTransaksiHasModified::UPDATE
-                    ]);
-                    $request['transaction_has_modified_id'] = DB::getPDO()->lastInsertId();
+                    // TransactionHasModified::create([
+                    //     'user_id'               => Auth::user()->id,
+                    //     'transaction_id'        => $id,
+                    //     'action'                => \EnumTransaksiHasModified::UPDATE
+                    // ]);
+                    // $request['transaction_has_modified_id'] = DB::getPDO()->lastInsertId();
                     Transaction::create($request->except('_token','file'));
                     // $transaction->notify(new InvoicePaid($invoice));
                     // $transaction->notify(new InvoicePaid("Payment Received!"));

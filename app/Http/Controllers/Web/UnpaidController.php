@@ -25,45 +25,70 @@ class UnpaidController extends Controller
 
     public function datatables()
     {       
-    
-        $arrSelect = [
-            'users.username as name',
-            'transactions.expired_date as expired_date',
-            'subscriptions.name as subscription_name',
-            'transactions.price as price',
-            'transactions.id as id',
-            'transactions.status as status',
-        ];
-        // $data = transaction::all();
-        $data = DB::table('users')
-        ->join('user_has_subscription', 'users.id', '=', 'user_has_subscription.user_id')
-        ->join('subscriptions', 'user_has_subscription.subscription_id', '=', 'subscriptions.id')
-        ->join('transactions', 'user_has_subscription.id', '=', 'transactions.user_has_subscription_id')
-        ->where('transactions.expired_date', '=', Carbon::now()->month())
-        ->orderBy('transactions.expired_date','desc')
-        ->select($arrSelect)
-        ->get();
+        $dt = Carbon::now();
+          $arrSelect = [
+                'users.username as name',
+                'transactions.expired_date as expired_date',
+                'subscriptions.name as subscription_name',
+                'transactions.price as price',
+                'transactions.id as id',
+                'transactions.status as status',
+                'users.role_id',
+                // 'trasanction_has_modified.transaction_id as transaction_modified'
+            ];
+            // $data = transaction::all();
+            if (Auth::check() && auth()->user()->role_id == ROLE::ROLE_WARGA){
+            $data = DB::table('users')
+            ->join('user_has_subscription', 'users.id', '=', 'user_has_subscription.user_id')
+            ->join('subscriptions', 'user_has_subscription.subscription_id', '=', 'subscriptions.id')
+            ->join('transactions', 'user_has_subscription.id', '=', 'transactions.user_has_subscription_id')
+            // ->join('transaction_has_modified', 'transactions.id', 'transaction_has_modified.transaction_id')
+            ->where('user_has_subscription.user_id', auth()->user()->id)
+            ->where('transactions.status','!=', \EnumTransaksi::STATUS_LUNAS)
+            ->orderBy('transactions.created_at','desc')
+            ->select($arrSelect)
+            ->get();
  
+            }else{
+            $data = DB::table('users')
+            ->join('user_has_subscription', 'users.id', '=', 'user_has_subscription.user_id')
+            ->join('subscriptions', 'user_has_subscription.subscription_id', '=', 'subscriptions.id')
+            ->join('transactions', 'user_has_subscription.id', '=', 'transactions.user_has_subscription_id')
+            // ->join('transaction_has_modified', 'transactions.id', 'transaction_has_modified.transaction_id')
+            ->where('transactions.status','!=', \EnumTransaksi::STATUS_LUNAS)
+            ->where('transactions.expired_date','<=', $dt)
+
+            ->orderBy('transactions.created_at','desc')
+            ->select($arrSelect)
+            ->get();
+ 
+            }
+            
         return Datatables::of($data)  
+
+        ->editColumn('id',
+            function ($data){
+                return $data->id;
+        })     
         ->editColumn('name',
             function ($data){
                 return $data->name;
         })     
-        ->editColumn('month_date',
-            function ($data){
-                return date('M Y', strtotime($data->expired_date));
-        })                
+        // ->editColumn('month_date',
+        //     function ($data){
+        //         return date('M Y', strtotime($data->expired_date));
+        // })                
         ->editColumn('subscription_name',
             function ($data){
                 return $data->subscription_name;
         })   
-        ->editColumn('price',
-            function ($data){
-                return $data->price;
-        })   
+        // ->editColumn('price',
+        //     function ($data){
+        //         return $data->price;
+        // })   
         ->editColumn('expired_date',
             function ($data){
-                return $data->expired_date;
+                return Carbon::parse($data->expired_date)->format('M Y');
         })              
         ->editColumn('status',
             function ($data){
@@ -74,14 +99,14 @@ class UnpaidController extends Controller
             function ($data){                                
             
                     return
-                    //\Component::btnRead('#', 'Detail Customer').
-                    \Component::btnUpdate(route('all-transaction-edit', $data->id), 'Ubah Transaction '. $data->name);
-                    // \Component::btnDelete(route('all-transaction-destroy', $data->id), 'Hapus Package '. $data->name);
+                    \Component::btnRead(route('all-transaction-detail', $data->id), 'Detail Transaction '. $data->name).
+                    \Component::btnUpdate(route('all-transaction-edit', $data->id), 'Ubah Transaction '. $data->name).
+                    \Component::btnDelete(route('all-transaction-destroy', $data->id), 'Hapus Transaction '. $data->name . ' '. Carbon::parse($data->expired_date)->format('M Y'));
                     
         })
         ->addIndexColumn()
         ->rawColumns(['status', 'action']) 
-        ->make(true);          
+        ->make(true);     
     }
     /**
      * Show the form for creating a new resource.
@@ -102,14 +127,80 @@ class UnpaidController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'file'                    =>  'required|mimes:jpeg,bmp,png|max:10000',
-            'notes'                     =>  'nullable',
-        ]);
+        $subscription_id = $request['subscription'];
+        $data = Subscription::select('price')->where('id', $subscription_id)->first();
+        $maxPaid = $data->price;
         
+        $sisa    = $data->price - $request->paid;
+
+        $this->validate($request,[
+            'user_has_subscription_id'       => 'required|max:50',
+            'expired_date'                   => 'required|max:100',
+            'paid'                           => 'required|numeric|max:'.$maxPaid,
+        ]);
 
 
+    //payment_proof
+        if($request->type_payment === "Transfer"){
+            $this->validate($request, [
+                'payment_proof' =>  'mimes:jpeg,jpg,png,gif|required|max:8000'
+            ]);
+        }
 
+        // $request['updated_at'] = now();        
+        // $request['created_at'] = now();        
+        $request['notes']      = '-';        
+        $request['price']      = $data->price;
+        if($sisa == 0){
+            $request['status'] = \EnumTransaksi::STATUS_LUNAS;
+        }else{
+            $request['status'] = \EnumTransaksi::STATUS_BELUM_LUNAS;
+        }
+        
+            //  Transaction::create($request->except('_token'));
+
+
+            if($request->type_payment === "Transfer"){
+                //payment_proof
+                    if($request->file('payment_proof')){
+                        $dir = 'payment_proof/';
+                        $size = '360';
+                        $format = 'file';
+                        $image = $request->file('payment_proof');         
+                        // $request['file'] = Storage::disk('minio')->put($image);
+                        $request['file'] = \ImageUploadHelper::pushStorage($dir, $size, $format, $image);
+                        
+                    }
+                    TransactionHasModified::create([
+                        'user_id'               => Auth::user()->id,
+                        'transaction_id'        => $id,
+                        'action'                => \EnumTransaksiHasModified::UPDATE
+                    ]);
+                    $request['transaction_has_modified_id'] = DB::getPDO()->lastInsertId();
+
+                    Transaction::create($request->except('_token'));
+                    TransactionHasModified::create([
+                        'user_id'               => Auth::user()->id,
+                        'transaction_id'        => $id,
+                        'action'                => \EnumTransaksiHasModified::UPDATE
+                    ]);
+                    // $transaction->notify(new InvoicePaid($invoice));
+
+                }else{
+                   
+                    TransactionHasModified::create([
+                        'user_id'               => Auth::user()->id,
+                        'transaction_id'        => $id,
+                        'action'                => \EnumTransaksiHasModified::UPDATE
+                    ]);
+                    $request['transaction_has_modified_id'] = DB::getPDO()->lastInsertId();
+                    Transaction::create($request->except('_token','file'));
+                    // $transaction->notify(new InvoicePaid($invoice));
+                    // $transaction->notify(new InvoicePaid("Payment Received!"));
+
+
+                    
+                }    
     }
 
     /**
@@ -247,6 +338,39 @@ class UnpaidController extends Controller
      */
     public function destroy($id)
     {
-        //
+          // menghapus data trx berdasarkan id yang dipilih
+    $trx = Transaction::where('id', $id)->first();
+
+    if (is_null($trx)){
+        return 'tidak ditemukan';
+    }
+    //check status payment
+    elseif($trx->status == \EnumTransaksi::STATUS_LUNAS){
+        $dt = Carbon::now()->toDateString();
+        //if date more than now set to terminated
+            if($trx->expired_date < $dt){
+                Transaction::where('id', $id)->update([
+                    'status' => \EnumTransaksi::STATUS_TENGGANG,
+                    'paid' => 0
+                    ]);
+                }
+             
+            elseif($trx->expired_date >= $dt){
+                Transaction::where('id', $id)->update([
+                    'status' => \EnumTransaksi::STATUS_BELUM_LUNAS,
+                    'paid' => 0
+                    ]);
+                }
+        // TransactionHasModified::create([
+        //     'user_id'               => Auth::user()->id,
+        //     'transaction_id'        => $id,
+        //     'action'                => \EnumTransaksiHasModified::SYNC_DATA
+        // ]);
+
+    }else{
+        $trx->delete();
+       
+    }
+
     }
 }

@@ -2,39 +2,76 @@
 @csrf
 
     <div class="form-group ">
-        <label for="name">Username</label>
-        <div class="form-group" style="margin-top:5px; ">
-            <select class="form-control cari" id="type" name="type">
+        <label for="username">Username</label>
+        <div class="form-group" style="margin-top:5px;">
+            <select class="form-control cari" id="user_has_subscription_id" name="user_has_subscription_id" style="width:100%;">
             
             </select>
         </div>
     </div>
+    <div class="subscription-list" style="margin-top:5px;"></div>
 
-    <div class="package-list" style="margin-top:5px;"></div>
-
-    <div class="form-group" style="margin-top:15px; ">
-        <label for="name">Name Package</label>
-        <select class="form-control " id="type" name="type">
-            @forelse($subscription as $package)
-                <option value="{{ $package->id }}">{{ $package->name }}</option>
+<div class="form-group" style="margin-top:15px; ">
+        <label for="subscription">Name Subscriptions</label>
+        <select class="form-control " id="subscription" name="subscription">
+            @forelse($subscriptions as $subscription)
+                <option value="{{ $subscription->id }}">{{ $subscription->name }}</option>
             @empty
             @endforelse
         </select>    
     </div>
+    
     <div class="form-group ">
-    <label for="name">Price</label>
-        <input class="form-control" name="price" type="integer" value="" id="price">
+    <label for="type_payment">Tipe Pembayaran</label>
+    <select class="form-control" id="type_payment" name="type_payment">
+            <option value="Transfer">Transfer</option>
+            <option value="Cash" selected>Cash</option>
+        </select>
+    </div>   
+    <div class="form-group ">
+    <label for="payment_proof">Upload Bukti Bayar (Jika Transfer)</label>
+        <input class="form-control-file" name="payment_proof" type="file" id="payment_proof">
     </div>
-    
-    
 
-    <div class="form-group ">
-        <label for="name">Status</label>
-        <input type="text" class="form-control">
+    <div class="form_group"></div>
+    <label for="expired_date">Expired Date</label>
+    <input type="text" class="form-control datepicker" name="expired_date" id="expired_date" value="{{ Carbon\Carbon::now()->addMonths(1) }}">
     </div>
+    
+    <!-- <div class="form-group ">
+    <label for="name">Biaya Admin</label>
+        <input class="form-control" name="fee" type="number" value="0" id="fee" readonly>
+    </div> -->
+    <div class="form-group ">
+    <label for="paid">Nominal Dibayar</label>
+        <input class="form-control" name="paid" type="number" value="" id="paid">
+    </div>
+
+
 </form>
 
 <script type="text/javascript">
+
+$('.datepicker').daterangepicker({
+       
+        locale: {format: 'YYYY-MM-DD'},
+        singleDatePicker: true
+        // timePicker: true,
+        // timePicker24Hour: true
+      });
+    // $('.datepicker').daterangepicker({
+    //       locale: {format: 'YYYY-MM-DD hh:mm:ss'},
+    //       singleDatePicker: true,
+    //     });
+
+    // Timepicker
+      $(".timepicker").timepicker({
+        icons: {
+          up: 'fas fa-chevron-up',
+          down: 'fas fa-chevron-down'
+        }
+      });
+
 $(document).ready(function(){
 	$('.cari').select2({
 		placeholder: 'Username...',
@@ -42,7 +79,7 @@ $(document).ready(function(){
         // headers: {
         //     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         // }
-        url: "{{route ('customer-load')}}",
+        url: "{{route ('warga-load')}}",
         dataType: 'json',
 		delay: 250,
 		processResults: function (data) {

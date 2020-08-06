@@ -9,15 +9,15 @@
   <link rel="stylesheet" type="text/css" href="{{asset('assets/vendors/jqueryui/css/jquery-ui.min.css')}}">
   
   <!-- Script -->
-  <script src="{{asset('/assets/vendors/jquery/js/jquery-3.3.1.min.js')}}" type="text/javascript"></script>
-  <script src="{{asset('/assets/vendors/jqueryui/js/jquery-ui.min.js')}}" type="text/javascript"></script>
+  <script src="{{asset('assets/vendors/jquery/js/jquery-3.3.1.min.js')}}" type="text/javascript"></script>
+  <script src="{{asset('assets/vendors/jqueryui/js/jquery-ui.min.js')}}" type="text/javascript"></script>
 
   <!-- General CSS Files -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}" >
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 
   <!-- CSS Libraries -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}" >
 
   <!-- Template CSS -->
   <link rel="stylesheet" href="{{ asset('assets/vendors/stisla/css/style.css') }}">

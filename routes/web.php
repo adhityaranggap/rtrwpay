@@ -14,11 +14,11 @@ use Illuminate\Support\Facades\Route;
 */
 /* Temporary */
 Route::get('/', function () {
-    return view('login-1');
+    return view('login');
 })->name('login');
 
 Route::get('/login', function () {
-    return view('login-1');
+    return view('login');
 })->name('login');
 
 
@@ -56,7 +56,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/destroy/{id}', 'Web\AllTransactionController@destroy')->name('all-transaction-destroy');
             Route::delete('/destroy/{id}', 'Web\AllTransactionController@destroy')->name('all-transaction-destroy');
         });
-    });
         Route::prefix('unpaid')->group(function () {
             Route::get('/', 'Web\UnpaidController@index')->name('unpaid-index');
             Route::get('/datatables', 'Web\UnpaidController@datatables')->name('unpaid-datatables');
@@ -66,6 +65,8 @@ Route::middleware('auth')->group(function () {
             Route::post('/update/{id}', 'Web\UnpaidController@update')->name('unpaid-update');
             Route::delete('/destroy/{id}', 'Web\UnpaidController@destroy')->name('unpaid-destroy');              
         });
+    });
+       
 
         // Route::prefix('payments')->group(function () {//==
         //     Route::get('/', 'Web\PaymentsController@index')->name('payments-index');

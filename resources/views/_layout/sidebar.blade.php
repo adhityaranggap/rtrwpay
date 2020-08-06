@@ -17,8 +17,8 @@
               <li class="nav-item dropdown">
                 <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i> <span>Transactions</span></a>
                 <ul class="dropdown-menu">
+                <li><a class="nav-link" href="{{route ('unpaid-index') }}">Unpaid</a></li>
                   <li><a class="nav-link" href="{{route ('all-transaction-index')}}">All Transaction</a></li>
-                  <li><a class="nav-link" href="{{route ('unpaid-index') }}">Unpaid</a></li>
                   <!-- <li><a class="nav-link" href="#">Payments</a></li> -->
                 </ul>
               </li>
@@ -34,7 +34,7 @@
               </li>
              
               <li class="nav-item dropdown">
-                <a href="#" class="nav-link has-dropdown"><i class="fas fa-bicycle"></i> <span>Subscription</span></a>
+                <a href="#" class="nav-link has-dropdown"><i class="fas fa-cog"></i> <span>Subscription</span></a>
                 <ul class="dropdown-menu">
                   <li><a href="{{ route('warga-subscription-index') }}">Warga Subsc</a></li>
                   <li><a href="{{ route('list-subscription-index') }}">List Subscritpions</a></li>

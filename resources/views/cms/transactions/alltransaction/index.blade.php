@@ -20,13 +20,13 @@
                 <table id="appTable" class="table nowrap table-bordered table-hover dataTable table-striped" style="width:100%">
                     <thead>
                     <tr>
-                    <th scope="col">No</th>
-                        <th scope="col">id</th>
+                    <!-- <th scope="col">No</th> -->
+                        <!-- <th scope="col">id</th> -->
                         <th scope="col">Nama</th>
                         <!-- <th scope="col">Bulan Pembayaran</th> -->
-                        <th scope="col">Tagihan</th>
-                        <!-- <th scope="col">Harga</th> -->
                         <th scope="col">Bulan</th>
+                        <!-- <th scope="col">Harga</th> -->
+                        <th scope="col">Tagihan</th>
                         <th scope="col">Status</th>
                         <th scope="col">Action</th>
                     </tr>
@@ -114,24 +114,25 @@
 <script>
 $(document).ready(function (){
    var table = $('#appTable').DataTable({
+    responsive: true,
     processing:true,
     serverSide:true,
     ajax: "{{ url()->current().'/datatables' }}",
         columns:[
-            {data: 'DT_RowIndex', name:'name', searchable: false},
-            {data: 'id', visible: false, className: 'id'},
+            // {data: 'DT_RowIndex', name:'name', searchable: false},
+            // {data: 'id', visible: false, className: 'id'},
             {data: 'name', name:'name'},
             // {data: 'month_date', name:'month_date'},
+            {data: 'expired_date', name:'expired_date'},
             {data: 'subscription_name', name:'subscription_name'},
             // {data: 'price', name:'price'},
-            {data: 'expired_date', name:'expired_date'},
             {data: 'status', name:'status'},
             {data: 'action', name:'action'},           
         ],
       'select': {
          'style': 'multi'
       },
-      'order': [[4, 'desc']]
+      'order': [[3, 'desc']]
    });
 
    $('#appTable tbody').on( 'click', 'tr', function () {

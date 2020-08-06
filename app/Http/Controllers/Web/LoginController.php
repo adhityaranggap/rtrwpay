@@ -26,10 +26,12 @@ class LoginController extends Controller
         $auth = Auth::attempt($credential);
 
         if($auth){ //sukses login
-            return redirect()->route('warga-index');
+            return redirect()->route('warga-index')->with('alert-success', 'You are now logged in.');
 
         }else{
-            return redirect()->back();
+            return redirect()->back()->withError($auth);
+
+            // return redirect()->back()->with('alert-success', 'You are now logged in.');;
             // ->withErrors($errors);
         }
 
