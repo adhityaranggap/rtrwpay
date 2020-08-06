@@ -14,11 +14,11 @@ use Illuminate\Support\Facades\Route;
 */
 /* Temporary */
 Route::get('/', function () {
-    return view('login');
+    return view('login-1');
 })->name('login');
 
 Route::get('/login', function () {
-    return view('login');
+    return view('login-1');
 })->name('login');
 
 
