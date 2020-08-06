@@ -25,7 +25,7 @@ class UnpaidController extends Controller
 
     public function datatables()
     {       
-        $dt = Carbon::now();
+
           $arrSelect = [
                 'users.username as name',
                 'transactions.expired_date as expired_date',
@@ -45,6 +45,7 @@ class UnpaidController extends Controller
             // ->join('transaction_has_modified', 'transactions.id', 'transaction_has_modified.transaction_id')
             ->where('user_has_subscription.user_id', auth()->user()->id)
             ->where('transactions.status','!=', \EnumTransaksi::STATUS_LUNAS)
+            ->whereBetween('transactions.expired_date', array(Carbon::now()->addYears(-1), Carbon::now()->addMonths(1)))
             ->orderBy('transactions.created_at','desc')
             ->select($arrSelect)
             ->get();
@@ -56,7 +57,7 @@ class UnpaidController extends Controller
             ->join('transactions', 'user_has_subscription.id', '=', 'transactions.user_has_subscription_id')
             // ->join('transaction_has_modified', 'transactions.id', 'transaction_has_modified.transaction_id')
             ->where('transactions.status','!=', \EnumTransaksi::STATUS_LUNAS)
-            ->where('transactions.expired_date','<=', $dt)
+            ->whereBetween('transactions.expired_date', array(Carbon::now()->addYears(-1), Carbon::now()->addMonths(1)))
 
             ->orderBy('transactions.created_at','desc')
             ->select($arrSelect)
