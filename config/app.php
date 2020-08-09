@@ -238,7 +238,8 @@ return [
         'EnumTransaksi' => App\Enum\EnumTransaksi::class,
         'EnumTransaksiHasModified' => App\Enum\EnumTransaksiHasModified::class,
         'EnumRole' => App\Enum\EnumRole::class,
-        'EnumTicket' => App\Enum\EnumTicket::class
+        'EnumTicket' => App\Enum\EnumTicket::class,
+        'EnumSubscription' => App\Enum\EnumSubscription::class
 
     ],
 

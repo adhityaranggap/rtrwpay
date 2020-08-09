@@ -1,4 +1,4 @@
-<form method="post" action="{{ route('list-package-update', $data->id) }}">
+<form method="post" action="{{ route('list-subscription-update', $data->id) }}">
 @csrf
 
     <div class="form-group ">

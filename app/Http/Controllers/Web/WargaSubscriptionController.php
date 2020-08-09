@@ -125,22 +125,35 @@ class WargaSubscriptionController extends Controller
        
         // buat transaksi baru dari paket yang diambil
         // $id = DB::getPdo()->lastInsertId();
+        $arrSelect = [
+            'subscriptions.price',
+            'subscriptions.plan_period as plan'
+        ];
         $data = DB::table('user_has_subscription')
         ->join('subscriptions','user_has_subscription.subscription_id','subscriptions.id')
-        ->select('subscriptions.price')
+        ->select($arrSelect)
         ->where('user_has_subscription.id', $userHasSubscription->id)->first();
-
+        // return response()->json($data->plan);
+        if($data->plan == \EnumSubscription::PLAN_DAILY){
+            $expired = Carbon::now()->addDay();
+        }elseif($data->plan == \EnumSubscription::PLAN_WEEKLY){
+            $expired = Carbon::now()->addWeeks();
+        }elseif($data->plan == \EnumSubscription::PLAN_MONTHLY){
+            $expired = Carbon::now()->addMonth();
+        }elseif($data->plan == \EnumSubscription::PLAN_YEARLY){
+            $expired = Carbon::now()->addYears();
+        }
         Transaction::create([
             'user_has_subscription_id'   =>  $userHasSubscription->id,
             'transaction_has_modified_id'   => 1,
             'notes'                 => '-',
-            'expired_date'          => Carbon::now()->addMonths(1),
+            'expired_date'          =>  $expired,
             'status'                => \EnumTransaksi::STATUS_BELUM_BAYAR,
             'price'                 =>  $data->price,
-            'fee'                   =>  0,
             'paid'                   =>  0,
             'created_at'            =>  now(),                   
         ]);
+        
 
     }
 

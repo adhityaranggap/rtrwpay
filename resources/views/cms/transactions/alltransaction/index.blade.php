@@ -24,7 +24,7 @@
                         <!-- <th scope="col">id</th> -->
                         <th scope="col">Nama</th>
                         <!-- <th scope="col">Bulan Pembayaran</th> -->
-                        <th scope="col">Bulan</th>
+                        <th scope="col">Expired Date</th>
                         <!-- <th scope="col">Harga</th> -->
                         <th scope="col">Tagihan</th>
                         <th scope="col">Status</th>

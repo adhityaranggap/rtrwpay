@@ -13,8 +13,9 @@ class SubscriptionSeeder extends Seeder
     {
            $arrSubsc =[
           [
-            'name'      =>  'IPL',
-            'price'     =>  100000
+            'name'            =>  'IPL DAILY',
+            'plan_period'     =>  \EnumSubscription::PLAN_DAILY,
+            'price'           =>  1000
           ]        
         ];
 

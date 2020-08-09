@@ -67,7 +67,8 @@ class ListSubscriptionController extends Controller
     {
         $this->validate($request,[
             'name' => 'required|string|max:255',
-            'price' => 'required|numeric|digits_between:1,10'
+            'price' => 'required|numeric',
+            'plan_period' => 'required|numeric|digits_between:1,10'
         ]);
 
         Subscription::create($request->except('_token'));
@@ -108,13 +109,14 @@ class ListSubscriptionController extends Controller
         $data = Subscription::where('id', $id)->first();
         $this->validate($request,[
             'name'      =>  'required|max:255|string',
-            'price'  =>  'required|max:10|integer,',
+            'price'  =>  'required|integer',
+            'plan_period'  =>  'required|max:10|integer'
 
         ]);
 
         
         if($data){
-            Subscription::where('id', $id)->update($request->only('name', 'subscription', 'price'));
+            Subscription::where('id', $id)->update($request->only('name', 'plan_period','price'));
         }
         
         return false;

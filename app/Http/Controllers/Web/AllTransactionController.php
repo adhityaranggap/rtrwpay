@@ -70,7 +70,7 @@ class AllTransactionController extends Controller
             ->join('subscriptions', 'user_has_subscription.subscription_id', '=', 'subscriptions.id')
             ->join('transactions', 'user_has_subscription.id', '=', 'transactions.user_has_subscription_id')
             // ->join('transaction_has_modified', 'transactions.id', 'transaction_has_modified.transaction_id')
-            ->whereBetween('transactions.expired_date', array(Carbon::now()->addYears(-1), Carbon::now()->addMonths(1)))
+            // ->whereBetween('transactions.expired_date', array(Carbon::now()->addYears(-1), Carbon::now()->addMonths(1)))
 
             ->orderBy('transactions.expired_date','desc')
             ->select($arrSelect)
@@ -102,7 +102,7 @@ class AllTransactionController extends Controller
         // })   
         ->editColumn('expired_date',
             function ($data){
-                return Carbon::parse($data->expired_date)->format('M Y');
+                return Carbon::parse($data->expired_date)->format('d M Y');
         })              
         ->editColumn('status',
             function ($data){
@@ -328,6 +328,7 @@ class AllTransactionController extends Controller
             'transactions.expired_date',
             'transactions.status',
             'subscriptions.price',
+            'subscriptions.plan_period as plan',
             'users.email',
         ];
 
@@ -338,7 +339,8 @@ class AllTransactionController extends Controller
         ->join('subscriptions','user_has_subscription.subscription_id','subscriptions.id')
         ->select($arrResponse)
         ->where('transactions.id', $id)->first();
-
+        // return response()->json($transaction);
+        
         $sisa = $transaction->price - $request->paid;
 
         if($sisa == 0){
@@ -347,24 +349,12 @@ class AllTransactionController extends Controller
             $request['status'] = \EnumTransaksi::STATUS_BELUM_LUNAS;
         }
         
-        if($request->status === \EnumTransaksi::STATUS_LUNAS){
-           
-            Transaction::create([
-                'user_has_subscription_id'         => $transaction->id,
-                'transaction_has_modified_id'   => 1,
-                'notes'                         => '-',
-                'expired_date'                  => Carbon::parse($transaction->expired_date)->addMonths(1),
-                'status'                        => \EnumTransaksi::STATUS_BELUM_BAYAR,
-                'price'                         => $transaction->price,
-                'paid'                          => 0,
-                'created_at'                    => now(),                   
-            ]);
             TransactionHasModified::create([
                 'user_id'               => Auth::user()->id,
                 'transaction_id'        => DB::getPdo()->lastInsertId(),
                 'action'                => \EnumTransaksiHasModified::CREATE
             ]);
-        }
+        
 
         if($transaction){
 
@@ -410,8 +400,29 @@ class AllTransactionController extends Controller
 
 
                     
-                }    
-                
+                }   
+                if($request->status == \EnumTransaksi::STATUS_LUNAS){        
+           
+                    if($transaction->plan == \EnumSubscription::PLAN_DAILY){
+                        $expired = Carbon::parse($transaction->expired_date)->addDay();
+                    }elseif($transaction->plan == \EnumSubscription::PLAN_WEEKLY){
+                        $expired = Carbon::parse($transaction->expired_date)->addWeeks();
+                    }elseif($transaction->plan == \EnumSubscription::PLAN_MONTHLY){
+                        $expired = Carbon::parse($transaction->expired_date)->addMonth();
+                    }elseif($transaction->plan == \EnumSubscription::PLAN_YEARLY){
+                        $expired = Carbon::parse($transaction->expired_date)->addYears();
+                    }
+                        Transaction::create([
+                            'user_has_subscription_id'      => $transaction->id,
+                            'transaction_has_modified_id'   => 1,
+                            'notes'                         => '-',
+                            'expired_date'                  => $expired,
+                            'status'                        => \EnumTransaksi::STATUS_BELUM_BAYAR,
+                            'price'                         => $transaction->price,
+                            'paid'                          => 0,
+                            'created_at'                    => now(),                   
+                        ]);   
+                        }
             }
           
         }
